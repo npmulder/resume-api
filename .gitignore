@@ -30,6 +30,9 @@ go.work.sum
 # Personal resume files
 resume/
 
+# Seed data (personal information)
+scripts/seed-data.json
+
 # Editor/IDE
 .idea/
 .vscode/

@@ -19,35 +19,39 @@ Building a Go-based REST API to serve resume data from PostgreSQL, with Kubernet
 - [🟢] Initialize Go module with proper naming
 - [🟢] Create comprehensive directory structure
 - [🟢] Create task tracking document (this file)
+- [🟢] Add JetBrains GoLand support to .gitignore
 
 ### 1.2 Documentation Framework
-- [🔴] Create system design document
-- [🔴] Create development guide
-- [🔴] Update CLAUDE.md with project specifics
+- [🟢] Create system design document
+- [🟢] Create development guide  
+- [🟢] Update CLAUDE.md with project specifics
 
 ---
 
 ## Phase 2: Core Development Setup
 
-### 2.1 Database Design (Est: 2-3 hours)
-- [🔴] **Design PostgreSQL schema**
+### 2.1 Database Design ✅ (Est: 2-3 hours)
+- [🟢] **Design PostgreSQL schema**
   - Profile table (personal info, summary)
   - Experiences table (work history, dates, descriptions)
-  - Skills table (categorized skills with JSONB)
-  - Achievements table 
-  - Education table
-  - Certifications table
-  - **Learning**: PostgreSQL data types, indexing, relationships
+  - Skills table (categorized skills with levels)
+  - Achievements table (with impact metrics)
+  - Education table (education + certifications)
+  - Projects table (with JSONB for technologies)
+  - **Learning**: PostgreSQL data types, indexing, relationships, JSONB
 
-- [🔴] **Create database migrations**
+- [🟢] **Create database migrations**
   - Install golang-migrate tool
-  - Write up/down migration files
+  - Write 6 paired up/down migration files
+  - Create migration runner in cmd/migrate/
   - **Learning**: Database migration patterns in Go
 
-- [🔴] **Create seed data script**
-  - Parse resume data into database format
-  - Create SQL insert scripts
-  - **Learning**: Data transformation, SQL scripting
+- [🟢] **Create seed data script**
+  - Refactor to JSON-based seed data (security best practice)
+  - Create gitignored seed-data.json with personal info
+  - Create seed-data.example.json for GitHub
+  - Update seed.go to read from JSON with fallback logic
+  - **Learning**: JSON marshaling/unmarshaling, file handling, Go struct tags
 
 ### 2.2 Go Project Dependencies (Est: 1 hour)
 - [🔴] **Add core dependencies to go.mod**

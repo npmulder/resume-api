@@ -1,0 +1,315 @@
+{
+  "profile": {
+    "name": "John Doe",
+    "title": "Senior Software Developer",
+    "email": "john.doe@example.com",
+    "phone": "+1 (555) 123-4567",
+    "location": "San Francisco, CA, USA",
+    "linkedin": "https://linkedin.com/in/johndoe",
+    "github": "https://github.com/johndoe/portfolio",
+    "summary": "Experienced software developer with 8+ years of expertise in building scalable web applications and microservices. Passionate about clean code, test-driven development, and continuous learning. Strong background in cloud technologies and DevOps practices."
+  },
+  "experiences": [
+    {
+      "company": "Tech Corp Inc",
+      "position": "Senior Software Developer",
+      "start_date": "2022-01-01",
+      "end_date": null,
+      "description": "Leading development of microservices architecture and mentoring junior developers.",
+      "highlights": [
+        "Led migration to Kubernetes, reducing deployment time by 60%",
+        "Implemented CI/CD pipeline using GitHub Actions",
+        "Mentored 3 junior developers and conducted code reviews",
+        "Designed and built RESTful APIs serving 1M+ requests daily"
+      ],
+      "order": 1
+    },
+    {
+      "company": "Startup Solutions",
+      "position": "Full Stack Developer",
+      "start_date": "2019-06-01",
+      "end_date": "2021-12-31",
+      "description": "Developed web applications using modern JavaScript frameworks and cloud services.",
+      "highlights": [
+        "Built React-based dashboard reducing customer support tickets by 40%",
+        "Implemented authentication system using OAuth 2.0",
+        "Optimized database queries improving response time by 50%"
+      ],
+      "order": 2
+    },
+    {
+      "company": "Digital Agency",
+      "position": "Junior Developer",
+      "start_date": "2018-01-01",
+      "end_date": "2019-05-31",
+      "description": "Developed websites and web applications for various clients.",
+      "highlights": [
+        "Created responsive websites using HTML, CSS, and JavaScript",
+        "Worked with PHP and MySQL for backend development",
+        "Collaborated with design team to implement pixel-perfect UIs"
+      ],
+      "order": 3
+    }
+  ],
+  "skills": [
+    {
+      "category": "Programming Languages",
+      "name": "JavaScript",
+      "level": "expert",
+      "order": 1,
+      "featured": true
+    },
+    {
+      "category": "Programming Languages",
+      "name": "TypeScript",
+      "level": "advanced",
+      "order": 2,
+      "featured": true
+    },
+    {
+      "category": "Programming Languages",
+      "name": "Python",
+      "level": "intermediate",
+      "order": 3,
+      "featured": false
+    },
+    {
+      "category": "Programming Languages",
+      "name": "Go",
+      "level": "intermediate",
+      "order": 4,
+      "featured": true
+    },
+    {
+      "category": "Frontend Frameworks",
+      "name": "React",
+      "level": "expert",
+      "order": 1,
+      "featured": true
+    },
+    {
+      "category": "Frontend Frameworks",
+      "name": "Vue.js",
+      "level": "advanced",
+      "order": 2,
+      "featured": false
+    },
+    {
+      "category": "Frontend Frameworks",
+      "name": "Angular",
+      "level": "intermediate",
+      "order": 3,
+      "featured": false
+    },
+    {
+      "category": "Backend Technologies",
+      "name": "Node.js",
+      "level": "expert",
+      "order": 1,
+      "featured": true
+    },
+    {
+      "category": "Backend Technologies",
+      "name": "Express.js",
+      "level": "advanced",
+      "order": 2,
+      "featured": true
+    },
+    {
+      "category": "Backend Technologies",
+      "name": "Django",
+      "level": "intermediate",
+      "order": 3,
+      "featured": false
+    },
+    {
+      "category": "Databases",
+      "name": "PostgreSQL",
+      "level": "advanced",
+      "order": 1,
+      "featured": true
+    },
+    {
+      "category": "Databases",
+      "name": "MongoDB",
+      "level": "advanced",
+      "order": 2,
+      "featured": true
+    },
+    {
+      "category": "Databases",
+      "name": "Redis",
+      "level": "intermediate",
+      "order": 3,
+      "featured": false
+    },
+    {
+      "category": "Cloud & DevOps",
+      "name": "AWS",
+      "level": "advanced",
+      "order": 1,
+      "featured": true
+    },
+    {
+      "category": "Cloud & DevOps",
+      "name": "Docker",
+      "level": "advanced",
+      "order": 2,
+      "featured": true
+    },
+    {
+      "category": "Cloud & DevOps",
+      "name": "Kubernetes",
+      "level": "intermediate",
+      "order": 3,
+      "featured": true
+    },
+    {
+      "category": "Cloud & DevOps",
+      "name": "CI/CD",
+      "level": "advanced",
+      "order": 4,
+      "featured": false
+    }
+  ],
+  "achievements": [
+    {
+      "title": "Performance Optimization Leader",
+      "description": "Led initiative to optimize application performance across multiple services",
+      "category": "performance",
+      "impact": "50% improvement in application response time",
+      "year": 2023,
+      "order": 1,
+      "featured": true
+    },
+    {
+      "title": "DevOps Transformation",
+      "description": "Spearheaded company-wide adoption of containerization and CI/CD practices",
+      "category": "innovation",
+      "impact": "60% reduction in deployment time",
+      "year": 2022,
+      "order": 2,
+      "featured": true
+    },
+    {
+      "title": "Team Leadership Excellence",
+      "description": "Mentored junior developers and established code review processes",
+      "category": "leadership",
+      "impact": "25% reduction in bugs reaching production",
+      "year": 2023,
+      "order": 3,
+      "featured": true
+    },
+    {
+      "title": "Customer Impact Initiative",
+      "description": "Developed customer-facing features that significantly improved user experience",
+      "category": "customer",
+      "impact": "40% reduction in support tickets",
+      "year": 2022,
+      "order": 4,
+      "featured": false
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Technology",
+      "degree": "Bachelor of Science in Computer Science",
+      "field": "Computer Science",
+      "year_completed": 2017,
+      "year_started": 2013,
+      "description": "Comprehensive computer science education covering algorithms, data structures, software engineering, and database systems",
+      "type": "education",
+      "status": "completed",
+      "credential_id": "",
+      "credential_url": "",
+      "order": 1,
+      "featured": true
+    },
+    {
+      "institution": "AWS",
+      "degree": "AWS Certified Solutions Architect",
+      "field": "Cloud Architecture",
+      "year_completed": 2022,
+      "year_started": null,
+      "description": "Amazon Web Services cloud architecture certification",
+      "type": "certification",
+      "status": "completed",
+      "credential_id": "AWS-SA-123456",
+      "credential_url": "https://aws.amazon.com/certification/",
+      "order": 1,
+      "featured": true
+    },
+    {
+      "institution": "Docker",
+      "degree": "Docker Certified Associate",
+      "field": "Containerization",
+      "year_completed": 2021,
+      "year_started": null,
+      "description": "Docker containerization and orchestration certification",
+      "type": "certification",
+      "status": "completed",
+      "credential_id": "DCA-789012",
+      "credential_url": "https://docker.com/certification/",
+      "order": 2,
+      "featured": true
+    },
+    {
+      "institution": "Linux Foundation",
+      "degree": "Certified Kubernetes Administrator (CKA)",
+      "field": "Kubernetes",
+      "year_completed": null,
+      "year_started": 2023,
+      "description": "Currently pursuing Kubernetes administration certification",
+      "type": "certification",
+      "status": "in_progress",
+      "credential_id": "",
+      "credential_url": "https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/",
+      "order": 3,
+      "featured": true
+    }
+  ],
+  "projects": [
+    {
+      "name": "E-commerce Platform",
+      "description": "Full-stack e-commerce platform built with React, Node.js, and PostgreSQL. Features include user authentication, payment processing, inventory management, and real-time notifications.",
+      "short_description": "Full-stack e-commerce platform with modern web technologies",
+      "technologies": ["React", "Node.js", "PostgreSQL", "Redis", "Stripe API", "Socket.io", "Docker"],
+      "github_url": "https://github.com/johndoe/ecommerce-platform",
+      "demo_url": "https://demo.johndoe.dev",
+      "start_date": "2022-06-01",
+      "end_date": "2023-02-01",
+      "status": "completed",
+      "is_featured": true,
+      "order": 1,
+      "key_features": [
+        "User authentication and authorization",
+        "Shopping cart and checkout process",
+        "Payment integration with Stripe",
+        "Real-time inventory updates",
+        "Admin dashboard for product management",
+        "Responsive design for mobile and desktop"
+      ]
+    },
+    {
+      "name": "Personal Portfolio Website",
+      "description": "Modern portfolio website showcasing projects and skills. Built with cutting-edge web technologies and deployed using CI/CD pipeline.",
+      "short_description": "Modern portfolio website with automated deployment",
+      "technologies": ["Next.js", "TypeScript", "Tailwind CSS", "Vercel", "GitHub Actions"],
+      "github_url": "https://github.com/johndoe/portfolio",
+      "demo_url": "https://johndoe.dev",
+      "start_date": "2023-01-01",
+      "end_date": null,
+      "status": "active",
+      "is_featured": true,
+      "order": 2,
+      "key_features": [
+        "Server-side rendering with Next.js",
+        "Responsive design with Tailwind CSS",
+        "Dark/light mode toggle",
+        "Contact form with email integration",
+        "Blog section with MDX support",
+        "SEO optimization"
+      ]
+    }
+  ]
+}
