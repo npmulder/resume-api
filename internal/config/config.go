@@ -19,12 +19,13 @@ type Config struct {
 
 // ServerConfig contains HTTP server configuration
 type ServerConfig struct {
-	Host         string        `mapstructure:"host"`
-	Port         int           `mapstructure:"port" validate:"min=1,max=65535"`
-	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
-	WriteTimeout time.Duration `mapstructure:"write_timeout"`
-	IdleTimeout  time.Duration `mapstructure:"idle_timeout"`
-	GracefulStop time.Duration `mapstructure:"graceful_stop"`
+	Host           string        `mapstructure:"host"`
+	Port           int           `mapstructure:"port" validate:"min=1,max=65535"`
+	ReadTimeout    time.Duration `mapstructure:"read_timeout"`
+	WriteTimeout   time.Duration `mapstructure:"write_timeout"`
+	IdleTimeout    time.Duration `mapstructure:"idle_timeout"`
+	GracefulStop   time.Duration `mapstructure:"graceful_stop"`
+	RequestTimeout time.Duration `mapstructure:"request_timeout"`
 }
 
 // DatabaseConfig contains database connection configuration
@@ -51,39 +52,39 @@ type LoggingConfig struct {
 func Load() (*Config, error) {
 	// Set up Viper
 	v := viper.New()
-	
+
 	// Set default values
 	setDefaults(v)
-	
+
 	// Configure Viper to read from environment variables
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.SetEnvPrefix("RESUME_API")
-	
+
 	// Try to read from .env file (optional)
 	v.SetConfigName(".env")
 	v.SetConfigType("env")
 	v.AddConfigPath(".")
 	v.AddConfigPath("./config")
-	
+
 	// Read config file if it exists (ignore if not found)
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return nil, fmt.Errorf("failed to read config file: %w", err)
 		}
 	}
-	
+
 	// Unmarshal configuration
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
-	
+
 	// Validate configuration
 	if err := validateConfig(&config); err != nil {
 		return nil, fmt.Errorf("config validation failed: %w", err)
 	}
-	
+
 	return &config, nil
 }
 
@@ -91,7 +92,7 @@ func Load() (*Config, error) {
 func setDefaults(v *viper.Viper) {
 	// Environment
 	v.SetDefault("environment", "development")
-	
+
 	// Server defaults
 	v.SetDefault("server.host", "localhost")
 	v.SetDefault("server.port", 8080)
@@ -99,7 +100,8 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("server.write_timeout", "15s")
 	v.SetDefault("server.idle_timeout", "60s")
 	v.SetDefault("server.graceful_stop", "30s")
-	
+	v.SetDefault("server.request_timeout", "10s")
+
 	// Database defaults
 	v.SetDefault("database.host", "localhost")
 	v.SetDefault("database.port", 5432)
@@ -111,7 +113,7 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("database.max_idle_connections", 5)
 	v.SetDefault("database.conn_max_lifetime", "1h")
 	v.SetDefault("database.conn_max_idle_time", "30m")
-	
+
 	// Logging defaults
 	v.SetDefault("logging.level", "info")
 	v.SetDefault("logging.format", "json")
@@ -128,17 +130,17 @@ func validateConfig(config *Config) error {
 	if !validEnvs[config.Environment] {
 		return fmt.Errorf("invalid environment: %s (must be development, production, or test)", config.Environment)
 	}
-	
+
 	// Validate server port
 	if config.Server.Port < 1 || config.Server.Port > 65535 {
 		return fmt.Errorf("invalid server port: %d (must be between 1 and 65535)", config.Server.Port)
 	}
-	
+
 	// Validate database port
 	if config.Database.Port < 1 || config.Database.Port > 65535 {
 		return fmt.Errorf("invalid database port: %d (must be between 1 and 65535)", config.Database.Port)
 	}
-	
+
 	// Validate SSL mode
 	validSSLModes := map[string]bool{
 		"disable":     true,
@@ -149,7 +151,7 @@ func validateConfig(config *Config) error {
 	if !validSSLModes[config.Database.SSLMode] {
 		return fmt.Errorf("invalid SSL mode: %s", config.Database.SSLMode)
 	}
-	
+
 	// Validate logging level
 	validLogLevels := map[string]bool{
 		"debug": true,
@@ -160,7 +162,7 @@ func validateConfig(config *Config) error {
 	if !validLogLevels[config.Logging.Level] {
 		return fmt.Errorf("invalid log level: %s", config.Logging.Level)
 	}
-	
+
 	// Validate logging format
 	validLogFormats := map[string]bool{
 		"json": true,
@@ -169,7 +171,7 @@ func validateConfig(config *Config) error {
 	if !validLogFormats[config.Logging.Format] {
 		return fmt.Errorf("invalid log format: %s", config.Logging.Format)
 	}
-	
+
 	// Validate database connection settings
 	if config.Database.MaxConnections < 1 {
 		return fmt.Errorf("max_connections must be at least 1")
@@ -180,7 +182,7 @@ func validateConfig(config *Config) error {
 	if config.Database.MaxIdleConnections > config.Database.MaxConnections {
 		return fmt.Errorf("max_idle_connections cannot be greater than max_connections")
 	}
-	
+
 	return nil
 }
 

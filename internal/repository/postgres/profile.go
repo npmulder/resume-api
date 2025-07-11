@@ -3,6 +3,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
@@ -47,8 +48,8 @@ func (r *ProfileRepository) GetProfile(ctx context.Context) (*models.Profile, er
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, repository.NewRepositoryError("get", "profile", fmt.Errorf("profile not found"))
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrNotFound
 		}
 		return nil, repository.NewRepositoryError("get", "profile", err)
 	}
@@ -104,8 +105,8 @@ func (r *ProfileRepository) UpdateProfile(ctx context.Context, profile *models.P
 	).Scan(&profile.UpdatedAt)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return repository.NewRepositoryError("update", "profile", fmt.Errorf("profile with id %d not found", profile.ID))
+		if errors.Is(err, pgx.ErrNoRows) {
+			return repository.ErrNotFound
 		}
 		return repository.NewRepositoryError("update", "profile", err)
 	}

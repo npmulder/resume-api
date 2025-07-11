@@ -3,10 +3,14 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/npmulder/resume-api/internal/models"
 )
+
+// ErrNotFound is a standard error for when a resource is not found.
+var ErrNotFound = errors.New("not found")
 
 // ProfileRepository defines operations for profile data
 type ProfileRepository interface {

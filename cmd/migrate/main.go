@@ -13,7 +13,7 @@ import (
 
 func main() {
 	var (
-		databaseURL = flag.String("database-url", getEnv("DATABASE_URL", "postgres://dev:devpass@localhost:5432/resume_api_test?sslmode=disable"), "Database URL")
+		databaseURL = flag.String("database-url", getEnv("DATABASE_URL", "postgres://dev:devpass@localhost:5432/resume_api_dev?sslmode=disable"), "Database URL")
 		direction   = flag.String("direction", "up", "Migration direction: up or down")
 		steps       = flag.Int("steps", 0, "Number of migration steps (0 means all)")
 	)
