@@ -19,27 +19,45 @@ ENV=development go run cmd/api/main.go
 # Build for production
 go build -o bin/api cmd/api/main.go
 
+# Quick compilation test (no database required)
+make test-short
+
+# Full integration tests with Docker PostgreSQL
+make test
+
 # Run tests with coverage
 go test -cover ./...
 
 # Run specific test package
-go test ./internal/services/
+go test ./internal/repository/postgres/
 
 # Format and lint code
 go fmt ./...
-golangci-lint run
+make lint
 
 # Update dependencies
 go mod tidy
+make deps
 ```
 
 ### Database Operations
 ```bash
+# Start development database (Docker)
+make dev-db
+
+# Start database + pgAdmin UI
+make dev-db-admin
+
+# Stop development database
+make dev-db-stop
+
 # Run database migrations
 go run cmd/migrate/main.go up
+make migrate-up
 
 # Rollback migrations
 go run cmd/migrate/main.go down 1
+make migrate-down
 
 # Seed database with resume data
 go run scripts/seed.go
@@ -50,6 +68,15 @@ migrate create -ext sql -dir migrations -seq migration_name
 
 ### Testing and Quality
 ```bash
+# Quick compilation check (recommended for development)
+make test-short
+
+# Full integration tests with Docker PostgreSQL (recommended)
+make test
+
+# Alternative Docker Compose approach
+make test-compose
+
 # Run all tests with race detection
 go test -race ./...
 
@@ -57,11 +84,12 @@ go test -race ./...
 go test -coverprofile=coverage.out ./...
 go tool cover -html=coverage.out
 
-# Run integration tests
-go test -tags=integration ./tests/
+# Manual repository tests (requires database)
+export TEST_DB_HOST=localhost TEST_DB_PORT=5433
+go test ./internal/repository/postgres/ -v
 
-# Generate mocks (if using mockery)
-go generate ./...
+# Clean up Docker resources
+make clean
 ```
 
 ## Project Architecture
