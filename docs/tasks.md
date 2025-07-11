@@ -153,12 +153,12 @@ Building a Go-based REST API to serve resume data from PostgreSQL, with Kubernet
 ## Phase 4: Business Logic Layer
 
 ### 4.1 Service Layer (Est: 2-3 hours)
-- [🔴] **Create service interfaces**
+- [🟢] **Create service interfaces**
   - ResumeService interface
   - Business logic abstraction
   - **Learning**: Service layer patterns, business logic separation
 
-- [🔴] **Implement service logic**
+- [🟢] **Implement service logic**
   - Data aggregation
   - Business rules
   - Error handling
@@ -216,7 +216,7 @@ Building a Go-based REST API to serve resume data from PostgreSQL, with Kubernet
   - Error case testing (not found, validation failures)
   - **Learning**: Table-driven testing, database testing patterns, test utilities
 
-- [🔴] **Service tests**
+- [🟢] **Service tests**
   - Business logic testing
   - Mock repositories
   - **Learning**: Interface mocking, testify/mock
