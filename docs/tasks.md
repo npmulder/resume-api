@@ -222,7 +222,7 @@ Building a Go-based REST API to serve resume data from PostgreSQL, with Kubernet
   - Mock repositories
   - **Learning**: Interface mocking, testify/mock
 
-- [🔴] **Handler tests**
+- [🟢] **Handler tests**
   - HTTP testing
   - Request/response validation
   - **Learning**: HTTP testing in Go, httptest package
