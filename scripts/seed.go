@@ -8,14 +8,14 @@ import (
 	"os"
 	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 )
 
 // Data structures matching the JSON format
 type SeedData struct {
-	Profile      Profile      `json:"profile"`
-	Experiences  []Experience `json:"experiences"`
-	Skills       []Skill      `json:"skills"`
+	Profile      Profile       `json:"profile"`
+	Experiences  []Experience  `json:"experiences"`
+	Skills       []Skill       `json:"skills"`
 	Achievements []Achievement `json:"achievements"`
 	Education    []Education   `json:"education"`
 	Projects     []Project     `json:"projects"`
@@ -33,13 +33,13 @@ type Profile struct {
 }
 
 type Experience struct {
-	Company     string    `json:"company"`
-	Position    string    `json:"position"`
-	StartDate   string    `json:"start_date"`
-	EndDate     *string   `json:"end_date"`
-	Description string    `json:"description"`
-	Highlights  []string  `json:"highlights"`
-	Order       int       `json:"order"`
+	Company     string   `json:"company"`
+	Position    string   `json:"position"`
+	StartDate   string   `json:"start_date"`
+	EndDate     *string  `json:"end_date"`
+	Description string   `json:"description"`
+	Highlights  []string `json:"highlights"`
+	Order       int      `json:"order"`
 }
 
 type Skill struct {
@@ -61,33 +61,33 @@ type Achievement struct {
 }
 
 type Education struct {
-	Institution   string  `json:"institution"`
-	Degree        string  `json:"degree"`
-	Field         string  `json:"field"`
-	YearCompleted *int    `json:"year_completed"`
-	YearStarted   *int    `json:"year_started"`
-	Description   string  `json:"description"`
-	Type          string  `json:"type"`
-	Status        string  `json:"status"`
-	CredentialID  string  `json:"credential_id"`
-	CredentialURL string  `json:"credential_url"`
-	Order         int     `json:"order"`
-	Featured      bool    `json:"featured"`
+	Institution   string `json:"institution"`
+	Degree        string `json:"degree"`
+	Field         string `json:"field"`
+	YearCompleted *int   `json:"year_completed"`
+	YearStarted   *int   `json:"year_started"`
+	Description   string `json:"description"`
+	Type          string `json:"type"`
+	Status        string `json:"status"`
+	CredentialID  string `json:"credential_id"`
+	CredentialURL string `json:"credential_url"`
+	Order         int    `json:"order"`
+	Featured      bool   `json:"featured"`
 }
 
 type Project struct {
-	Name             string    `json:"name"`
-	Description      string    `json:"description"`
-	ShortDescription string    `json:"short_description"`
-	Technologies     []string  `json:"technologies"`
-	GitHubURL        string    `json:"github_url"`
-	DemoURL          *string   `json:"demo_url"`
-	StartDate        string    `json:"start_date"`
-	EndDate          *string   `json:"end_date"`
-	Status           string    `json:"status"`
-	IsFeatured       bool      `json:"is_featured"`
-	Order            int       `json:"order"`
-	KeyFeatures      []string  `json:"key_features"`
+	Name             string   `json:"name"`
+	Description      string   `json:"description"`
+	ShortDescription string   `json:"short_description"`
+	Technologies     []string `json:"technologies"`
+	GitHubURL        string   `json:"github_url"`
+	DemoURL          *string  `json:"demo_url"`
+	StartDate        string   `json:"start_date"`
+	EndDate          *string  `json:"end_date"`
+	Status           string   `json:"status"`
+	IsFeatured       bool     `json:"is_featured"`
+	Order            int      `json:"order"`
+	KeyFeatures      []string `json:"key_features"`
 }
 
 func main() {
@@ -96,7 +96,7 @@ func main() {
 
 	// Determine seed data file path
 	seedFile := getEnv("SEED_FILE", "scripts/seed-data.json")
-	
+
 	// Check if seed file exists, fall back to example if not
 	if _, err := os.Stat(seedFile); os.IsNotExist(err) {
 		fmt.Printf("Seed file %s not found, using example data from scripts/seed-data.example.json\n", seedFile)
@@ -235,7 +235,7 @@ func seedExperiences(tx *sql.Tx, experiences []Experience) error {
 			startDate,
 			endDate,
 			exp.Description,
-			exp.Highlights,
+			pq.Array(exp.Highlights),
 			exp.Order,
 		)
 		if err != nil {
@@ -381,7 +381,7 @@ func seedProjects(tx *sql.Tx, projects []Project) error {
 			project.Status,
 			project.IsFeatured,
 			project.Order,
-			project.KeyFeatures,
+			pq.Array(project.KeyFeatures),
 		)
 		if err != nil {
 			return fmt.Errorf("failed to insert project %s: %w", project.Name, err)
