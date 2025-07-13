@@ -14,6 +14,7 @@ import (
 // @Produce json
 // @Success 200 {object} map[string]string "Service is healthy"
 // @Router /health [get]
+// @Response 200 {object} map[string]string "Example response" {"status":"ok"}
 func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
