@@ -15,6 +15,7 @@ type Config struct {
 	Server      ServerConfig   `mapstructure:"server"`
 	Database    DatabaseConfig `mapstructure:"database"`
 	Logging     LoggingConfig  `mapstructure:"logging"`
+	Redis       RedisConfig    `mapstructure:"redis"`
 }
 
 // ServerConfig contains HTTP server configuration
@@ -46,6 +47,16 @@ type DatabaseConfig struct {
 type LoggingConfig struct {
 	Level  string `mapstructure:"level" validate:"oneof=debug info warn error"`
 	Format string `mapstructure:"format" validate:"oneof=json text"`
+}
+
+// RedisConfig contains Redis connection configuration
+type RedisConfig struct {
+	Host     string        `mapstructure:"host" validate:"required"`
+	Port     int           `mapstructure:"port" validate:"min=1,max=65535"`
+	Password string        `mapstructure:"password"`
+	DB       int           `mapstructure:"db" validate:"min=0"`
+	TTL      time.Duration `mapstructure:"ttl"`
+	Enabled  bool          `mapstructure:"enabled"`
 }
 
 // Load loads configuration from environment variables and config files
@@ -117,6 +128,14 @@ func setDefaults(v *viper.Viper) {
 	// Logging defaults
 	v.SetDefault("logging.level", "info")
 	v.SetDefault("logging.format", "json")
+
+	// Redis defaults
+	v.SetDefault("redis.host", "localhost")
+	v.SetDefault("redis.port", 6379)
+	v.SetDefault("redis.password", "")
+	v.SetDefault("redis.db", 0)
+	v.SetDefault("redis.ttl", "15m")
+	v.SetDefault("redis.enabled", true)
 }
 
 // validateConfig performs basic validation on the configuration
@@ -183,6 +202,19 @@ func validateConfig(config *Config) error {
 		return fmt.Errorf("max_idle_connections cannot be greater than max_connections")
 	}
 
+	// Validate Redis configuration if enabled
+	if config.Redis.Enabled {
+		if config.Redis.Port < 1 || config.Redis.Port > 65535 {
+			return fmt.Errorf("invalid redis port: %d (must be between 1 and 65535)", config.Redis.Port)
+		}
+		if config.Redis.DB < 0 {
+			return fmt.Errorf("redis db must be non-negative")
+		}
+		if config.Redis.TTL < time.Second {
+			return fmt.Errorf("redis ttl must be at least 1 second")
+		}
+	}
+
 	return nil
 }
 
@@ -216,4 +248,12 @@ func (c *Config) IsProduction() bool {
 // IsTest returns true if running in test mode
 func (c *Config) IsTest() bool {
 	return c.Environment == "test"
+}
+
+// RedisURL returns a formatted Redis connection string
+func (c *RedisConfig) RedisURL() string {
+	if c.Password == "" {
+		return fmt.Sprintf("redis://%s:%d/%d", c.Host, c.Port, c.DB)
+	}
+	return fmt.Sprintf("redis://:%s@%s:%d/%d", c.Password, c.Host, c.Port, c.DB)
 }

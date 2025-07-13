@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/npmulder/resume-api/internal/cache"
 	"github.com/npmulder/resume-api/internal/config"
 	"github.com/npmulder/resume-api/internal/database"
 	"github.com/npmulder/resume-api/internal/handlers"
@@ -65,8 +66,22 @@ func main() {
 		Project:     projectRepo,
 	}
 
+	// Initialize cache
+	cacheClient, err := cache.New(&cfg.Redis)
+	if err != nil {
+		if cfg.Redis.Enabled {
+			logger.Error("failed to initialize Redis cache", "error", err)
+			os.Exit(1)
+		}
+		logger.Info("Redis cache is disabled, using no-op cache")
+	} else {
+		logger.Info("Redis cache initialized successfully")
+		defer cacheClient.Close()
+	}
+
 	// Initialize services
-	resumeService := services.NewResumeService(repos)
+	baseResumeService := services.NewResumeService(repos)
+	resumeService := services.NewCachedResumeService(baseResumeService, cacheClient, cfg.Redis.TTL)
 
 	// Initialize handlers
 	resumeHandler := handlers.NewResumeHandler(resumeService)
