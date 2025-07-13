@@ -15,7 +15,8 @@ DOCKER_COMPOSE_FILE := docker-compose.test.yml
         dev-db dev-db-admin dev-db-stop \
         migrate-up migrate-down \
         build lint clean deps tools \
-        up down logs
+        up down logs \
+        docker-build docker-up docker-down docker-logs
 
 # Default target
 help:
@@ -40,6 +41,13 @@ help:
 	@echo "  build           Build all packages"
 	@echo "  lint            Run linter (if available)"
 	@echo "  clean           Clean up Docker containers and volumes"
+	@echo ""
+	@echo "Docker:"
+	@echo "  docker-build    Build Docker image"
+	@echo "  docker-up       Start all services with Docker Compose"
+	@echo "  docker-up-admin Start all services with pgAdmin"
+	@echo "  docker-down     Stop all services"
+	@echo "  docker-logs     View all service logs"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  deps            Download and tidy dependencies"
@@ -154,3 +162,35 @@ up: dev-db
 down: dev-db-stop
 logs:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) logs -f test-db
+
+#
+# Docker commands
+#
+docker-build:
+	@echo "🐳 Building Docker image..."
+	docker build -t resume-api:latest .
+	@echo "✅ Docker image built successfully"
+
+docker-up:
+	@echo "🐳 Starting all services with Docker Compose..."
+	docker-compose up -d
+	@echo "✅ Services started successfully"
+	@echo "   API: http://localhost:8080"
+	@echo "   Database: postgres://dev:devpass@localhost:5432/resume_api_dev"
+
+docker-up-admin:
+	@echo "🐳 Starting all services with pgAdmin..."
+	docker-compose --profile admin up -d
+	@echo "✅ Services started successfully"
+	@echo "   API: http://localhost:8080"
+	@echo "   Database: postgres://dev:devpass@localhost:5432/resume_api_dev"
+	@echo "   pgAdmin: http://localhost:5050 (admin@example.com / admin)"
+
+docker-down:
+	@echo "🛑 Stopping all services..."
+	docker-compose down
+	@echo "✅ Services stopped successfully"
+
+docker-logs:
+	@echo "📋 Viewing all service logs..."
+	docker-compose logs -f
