@@ -95,6 +95,9 @@ func main() {
 	router.Use(middleware.CORSMiddleware())
 	router.Use(middleware.TimeoutMiddleware(cfg.Server.RequestTimeout, logger))
 	router.Use(middleware.MetricsMiddleware())
+	router.Use(middleware.SecurityHeadersMiddleware())
+	router.Use(middleware.InputValidationMiddleware())
+	router.Use(middleware.RateLimiterMiddleware(middleware.DefaultRateLimiterConfig()))
 
 	// Define routes
 	router.GET("/health", handlers.HealthCheck)
