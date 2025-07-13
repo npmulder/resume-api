@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/npmulder/resume-api/internal/repository"
 	"github.com/npmulder/resume-api/internal/services"
+	"github.com/npmulder/resume-api/internal/utils"
 )
 
 // ResumeHandler handles the HTTP requests for the resume data.
@@ -26,17 +27,17 @@ func NewResumeHandler(service services.ResumeService) *ResumeHandler {
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.Profile
-// @Failure 404 {object} map[string]string "Not found"
-// @Failure 500 {object} map[string]string "Internal server error"
+// @Failure 404 {object} models.APIError "Not found"
+// @Failure 500 {object} models.APIError "Internal server error"
 // @Router /api/v1/profile [get]
 func (h *ResumeHandler) GetProfile(c *gin.Context) {
 	profile, err := h.service.GetProfile(c.Request.Context())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+			utils.NotFound(c, "Profile not found")
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		utils.HandleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, profile)
@@ -56,24 +57,24 @@ func (h *ResumeHandler) GetProfile(c *gin.Context) {
 // @Param limit query int false "Limit number of results"
 // @Param offset query int false "Offset for pagination"
 // @Success 200 {array} models.Experience
-// @Failure 400 {object} map[string]string "Bad request"
-// @Failure 404 {object} map[string]string "Not found"
-// @Failure 500 {object} map[string]string "Internal server error"
+// @Failure 400 {object} models.APIError "Bad request"
+// @Failure 404 {object} models.APIError "Not found"
+// @Failure 500 {object} models.APIError "Internal server error"
 // @Router /api/v1/experiences [get]
 func (h *ResumeHandler) GetExperiences(c *gin.Context) {
 	var filters repository.ExperienceFilters
 	if err := c.ShouldBindQuery(&filters); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ValidationError(c, "Invalid query parameters", err.Error())
 		return
 	}
 
 	experiences, err := h.service.GetExperiences(c.Request.Context(), filters)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+			utils.NotFound(c, "No experiences found matching the criteria")
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		utils.HandleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, experiences)
@@ -91,24 +92,24 @@ func (h *ResumeHandler) GetExperiences(c *gin.Context) {
 // @Param limit query int false "Limit number of results"
 // @Param offset query int false "Offset for pagination"
 // @Success 200 {array} models.Skill
-// @Failure 400 {object} map[string]string "Bad request"
-// @Failure 404 {object} map[string]string "Not found"
-// @Failure 500 {object} map[string]string "Internal server error"
+// @Failure 400 {object} models.APIError "Bad request"
+// @Failure 404 {object} models.APIError "Not found"
+// @Failure 500 {object} models.APIError "Internal server error"
 // @Router /api/v1/skills [get]
 func (h *ResumeHandler) GetSkills(c *gin.Context) {
 	var filters repository.SkillFilters
 	if err := c.ShouldBindQuery(&filters); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ValidationError(c, "Invalid query parameters", err.Error())
 		return
 	}
 
 	skills, err := h.service.GetSkills(c.Request.Context(), filters)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+			utils.NotFound(c, "No skills found matching the criteria")
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		utils.HandleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, skills)
@@ -126,24 +127,24 @@ func (h *ResumeHandler) GetSkills(c *gin.Context) {
 // @Param limit query int false "Limit number of results"
 // @Param offset query int false "Offset for pagination"
 // @Success 200 {array} models.Achievement
-// @Failure 400 {object} map[string]string "Bad request"
-// @Failure 404 {object} map[string]string "Not found"
-// @Failure 500 {object} map[string]string "Internal server error"
+// @Failure 400 {object} models.APIError "Bad request"
+// @Failure 404 {object} models.APIError "Not found"
+// @Failure 500 {object} models.APIError "Internal server error"
 // @Router /api/v1/achievements [get]
 func (h *ResumeHandler) GetAchievements(c *gin.Context) {
 	var filters repository.AchievementFilters
 	if err := c.ShouldBindQuery(&filters); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ValidationError(c, "Invalid query parameters", err.Error())
 		return
 	}
 
 	achievements, err := h.service.GetAchievements(c.Request.Context(), filters)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+			utils.NotFound(c, "No achievements found matching the criteria")
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		utils.HandleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, achievements)
@@ -162,24 +163,24 @@ func (h *ResumeHandler) GetAchievements(c *gin.Context) {
 // @Param limit query int false "Limit number of results"
 // @Param offset query int false "Offset for pagination"
 // @Success 200 {array} models.Education
-// @Failure 400 {object} map[string]string "Bad request"
-// @Failure 404 {object} map[string]string "Not found"
-// @Failure 500 {object} map[string]string "Internal server error"
+// @Failure 400 {object} models.APIError "Bad request"
+// @Failure 404 {object} models.APIError "Not found"
+// @Failure 500 {object} models.APIError "Internal server error"
 // @Router /api/v1/education [get]
 func (h *ResumeHandler) GetEducation(c *gin.Context) {
 	var filters repository.EducationFilters
 	if err := c.ShouldBindQuery(&filters); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ValidationError(c, "Invalid query parameters", err.Error())
 		return
 	}
 
 	education, err := h.service.GetEducation(c.Request.Context(), filters)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+			utils.NotFound(c, "No education records found matching the criteria")
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		utils.HandleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, education)
@@ -197,24 +198,24 @@ func (h *ResumeHandler) GetEducation(c *gin.Context) {
 // @Param limit query int false "Limit number of results"
 // @Param offset query int false "Offset for pagination"
 // @Success 200 {array} models.Project
-// @Failure 400 {object} map[string]string "Bad request"
-// @Failure 404 {object} map[string]string "Not found"
-// @Failure 500 {object} map[string]string "Internal server error"
+// @Failure 400 {object} models.APIError "Bad request"
+// @Failure 404 {object} models.APIError "Not found"
+// @Failure 500 {object} models.APIError "Internal server error"
 // @Router /api/v1/projects [get]
 func (h *ResumeHandler) GetProjects(c *gin.Context) {
 	var filters repository.ProjectFilters
 	if err := c.ShouldBindQuery(&filters); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ValidationError(c, "Invalid query parameters", err.Error())
 		return
 	}
 
 	projects, err := h.service.GetProjects(c.Request.Context(), filters)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+			utils.NotFound(c, "No projects found matching the criteria")
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		utils.HandleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, projects)

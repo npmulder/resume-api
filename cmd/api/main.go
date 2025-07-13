@@ -110,7 +110,8 @@ func main() {
 	router := gin.New()
 
 	// Register middleware
-	router.Use(middleware.RecoveryMiddleware(logger))
+	router.Use(middleware.RequestIDMiddleware())
+	router.Use(middleware.ErrorHandlerMiddleware(logger))
 	router.Use(middleware.LoggingMiddleware(logger))
 	router.Use(middleware.CORSMiddleware())
 	router.Use(middleware.TimeoutMiddleware(cfg.Server.RequestTimeout, logger))
