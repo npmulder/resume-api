@@ -1,3 +1,18 @@
+// @title Resume API
+// @version 1.0
+// @description API for resume data including profile, experiences, skills, achievements, education, and projects
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.example.com/support
+// @contact.email support@example.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /
+// @schemes http
 package main
 
 import (
@@ -11,7 +26,11 @@ import (
 	"syscall"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
+	// Import generated docs
+	_ "github.com/npmulder/resume-api/docs"
 	"github.com/npmulder/resume-api/internal/cache"
 	"github.com/npmulder/resume-api/internal/config"
 	"github.com/npmulder/resume-api/internal/database"
@@ -102,6 +121,9 @@ func main() {
 	// Define routes
 	router.GET("/health", handlers.HealthCheck)
 	router.GET("/metrics", handlers.MetricsHandler())
+
+	// Swagger documentation endpoint
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	apiV1 := router.Group("/api/v1")
 	{

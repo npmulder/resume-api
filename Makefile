@@ -16,7 +16,8 @@ DOCKER_COMPOSE_FILE := docker-compose.test.yml
         migrate-up migrate-down \
         build lint clean deps tools \
         up down logs \
-        docker-build docker-up docker-down docker-logs
+        docker-build docker-up docker-down docker-logs \
+        swagger
 
 # Default target
 help:
@@ -41,6 +42,7 @@ help:
 	@echo "  build           Build all packages"
 	@echo "  lint            Run linter (if available)"
 	@echo "  clean           Clean up Docker containers and volumes"
+	@echo "  swagger         Generate Swagger documentation"
 	@echo ""
 	@echo "Docker:"
 	@echo "  docker-build    Build Docker image"
@@ -153,6 +155,7 @@ deps:
 tools:
 	@echo "🛠️  Installing development tools..."
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/swaggo/swag/cmd/swag@latest
 	@echo "✅ Development tools installed"
 
 #
@@ -194,3 +197,12 @@ docker-down:
 docker-logs:
 	@echo "📋 Viewing all service logs..."
 	docker-compose logs -f
+
+#
+# Documentation commands
+#
+swagger:
+	@echo "📚 Generating Swagger documentation..."
+	./scripts/generate-swagger.sh
+	@echo "✅ Swagger documentation generated"
+	@echo "   Access Swagger UI at http://localhost:8080/swagger/index.html when the API is running"
