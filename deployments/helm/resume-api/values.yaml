@@ -1,0 +1,123 @@
+# Default values for resume-api Helm chart
+
+# Name override options
+nameOverride: ""
+fullnameOverride: ""
+
+# Replica count for the deployment
+replicaCount: 1
+
+# Image configuration
+image:
+  repository: resume-api
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+
+# Ingress configuration using Gateway API
+gateway:
+  enabled: true
+  name: resume-api-gateway
+  namespace: default
+  className: istio
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: Same
+
+# HttpRoute configuration
+httpRoute:
+  enabled: true
+  name: resume-api-route
+  hostnames:
+    - "resume-api.example.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: resume-api
+          port: 8080
+
+# Application configuration
+config:
+  environment: production
+  server:
+    host: 0.0.0.0
+    port: 8080
+    readTimeout: 15s
+    writeTimeout: 15s
+    idleTimeout: 60s
+    gracefulStop: 30s
+    requestTimeout: 10s
+  logging:
+    level: info
+    format: json
+
+# Database configuration
+database:
+  # External database configuration
+  external:
+    enabled: true
+    host: postgres-postgresql.default.svc.cluster.local
+    port: 5432
+    name: resume_api_prod
+    user: resume_api
+    # The password will be stored in a secret
+    existingSecret: resume-api-db-credentials
+    existingSecretPasswordKey: password
+    sslMode: require
+    maxConnections: 25
+    maxIdleConnections: 5
+    connMaxLifetime: 1h
+    connMaxIdleTime: 30m
+
+  # Embedded PostgreSQL (for development/testing)
+  embedded:
+    enabled: false
+    image:
+      repository: postgres
+      tag: 15-alpine
+      pullPolicy: IfNotPresent
+    persistence:
+      enabled: true
+      size: 1Gi
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 500m
+
+# Resource limits and requests
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m
+  limits:
+    memory: 256Mi
+    cpu: 200m
+
+# Pod security context
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}

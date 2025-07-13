@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "resume-api.fullname" . }}
+  labels:
+    {{- include "resume-api.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "resume-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "resume-api.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.server.port }}
+              protocol: TCP
+          env:
+            - name: RESUME_API_ENVIRONMENT
+              value: {{ .Values.config.environment }}
+            - name: RESUME_API_SERVER_HOST
+              value: {{ .Values.config.server.host | quote }}
+            - name: RESUME_API_SERVER_PORT
+              value: {{ .Values.config.server.port | quote }}
+            - name: RESUME_API_SERVER_READ_TIMEOUT
+              value: {{ .Values.config.server.readTimeout }}
+            - name: RESUME_API_SERVER_WRITE_TIMEOUT
+              value: {{ .Values.config.server.writeTimeout }}
+            - name: RESUME_API_SERVER_IDLE_TIMEOUT
+              value: {{ .Values.config.server.idleTimeout }}
+            - name: RESUME_API_SERVER_GRACEFUL_STOP
+              value: {{ .Values.config.server.gracefulStop }}
+            - name: RESUME_API_SERVER_REQUEST_TIMEOUT
+              value: {{ .Values.config.server.requestTimeout }}
+            - name: RESUME_API_LOGGING_LEVEL
+              value: {{ .Values.config.logging.level }}
+            - name: RESUME_API_LOGGING_FORMAT
+              value: {{ .Values.config.logging.format }}
+            {{- if .Values.database.external.enabled }}
+            - name: RESUME_API_DATABASE_HOST
+              value: {{ .Values.database.external.host }}
+            - name: RESUME_API_DATABASE_PORT
+              value: {{ .Values.database.external.port | quote }}
+            - name: RESUME_API_DATABASE_NAME
+              value: {{ .Values.database.external.name }}
+            - name: RESUME_API_DATABASE_USER
+              value: {{ .Values.database.external.user }}
+            - name: RESUME_API_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.database.external.existingSecret }}{{ .Values.database.external.existingSecret }}{{ else }}{{ include "resume-api.fullname" . }}-db-credentials{{ end }}
+                  key: {{ .Values.database.external.existingSecretPasswordKey }}
+            - name: RESUME_API_DATABASE_SSL_MODE
+              value: {{ .Values.database.external.sslMode }}
+            - name: RESUME_API_DATABASE_MAX_CONNECTIONS
+              value: {{ .Values.database.external.maxConnections | quote }}
+            - name: RESUME_API_DATABASE_MAX_IDLE_CONNECTIONS
+              value: {{ .Values.database.external.maxIdleConnections | quote }}
+            - name: RESUME_API_DATABASE_CONN_MAX_LIFETIME
+              value: {{ .Values.database.external.connMaxLifetime }}
+            - name: RESUME_API_DATABASE_CONN_MAX_IDLE_TIME
+              value: {{ .Values.database.external.connMaxIdleTime }}
+            {{- else if .Values.database.embedded.enabled }}
+            - name: RESUME_API_DATABASE_HOST
+              value: {{ .Release.Name }}-postgresql
+            - name: RESUME_API_DATABASE_PORT
+              value: "5432"
+            - name: RESUME_API_DATABASE_NAME
+              value: {{ .Values.database.external.name }}
+            - name: RESUME_API_DATABASE_USER
+              value: {{ .Values.database.external.user }}
+            - name: RESUME_API_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: postgres-password
+            - name: RESUME_API_DATABASE_SSL_MODE
+              value: disable
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
