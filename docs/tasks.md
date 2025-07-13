@@ -228,10 +228,10 @@ Building a Go-based REST API to serve resume data from PostgreSQL, with Kubernet
   - **Learning**: HTTP testing in Go, httptest package
 
 ### 6.2 Integration Tests (Est: 3-4 hours)
-- [🔴] **Database integration tests**
-  - Test containers or test database
-  - End-to-end data flow
-  - **Learning**: Integration testing strategies
+- [🟢] **Database integration tests**
+  - Test containers or test database ✅
+  - End-to-end data flow ✅
+  - **Learning**: Integration testing strategies ✅
 
 ---
 
