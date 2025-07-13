@@ -79,9 +79,11 @@ func main() {
 	router.Use(middleware.LoggingMiddleware(logger))
 	router.Use(middleware.CORSMiddleware())
 	router.Use(middleware.TimeoutMiddleware(cfg.Server.RequestTimeout, logger))
+	router.Use(middleware.MetricsMiddleware())
 
 	// Define routes
 	router.GET("/health", handlers.HealthCheck)
+	router.GET("/metrics", handlers.MetricsHandler())
 
 	apiV1 := router.Group("/api/v1")
 	{
