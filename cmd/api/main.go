@@ -39,6 +39,7 @@ import (
 	"github.com/npmulder/resume-api/internal/repository"
 	"github.com/npmulder/resume-api/internal/repository/postgres"
 	"github.com/npmulder/resume-api/internal/services"
+	"github.com/npmulder/resume-api/internal/versioning"
 )
 
 func main() {
@@ -118,6 +119,9 @@ func main() {
 	router.Use(middleware.InputValidationMiddleware())
 	router.Use(middleware.RateLimiterMiddleware(middleware.DefaultRateLimiterConfig()))
 
+	// Add version negotiation middleware
+	router.Use(versioning.VersionNegotiationMiddleware(versioning.DefaultVersionNegotiationOptions()))
+
 	// Define routes
 	router.GET("/health", handlers.HealthCheck)
 	router.GET("/metrics", handlers.MetricsHandler())
@@ -125,6 +129,21 @@ func main() {
 	// Swagger documentation endpoint
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// Create versioned router
+	versionedRouter := versioning.NewRouter(router)
+
+	// Register API routes for v1
+	v1 := versionedRouter.Group(versioning.V1)
+	{
+		v1.GET("/profile", resumeHandler.GetProfile)
+		v1.GET("/experiences", resumeHandler.GetExperiences)
+		v1.GET("/skills", resumeHandler.GetSkills)
+		v1.GET("/achievements", resumeHandler.GetAchievements)
+		v1.GET("/education", resumeHandler.GetEducation)
+		v1.GET("/projects", resumeHandler.GetProjects)
+	}
+
+	// For backward compatibility, keep the old route group
 	apiV1 := router.Group("/api/v1")
 	{
 		apiV1.GET("/profile", resumeHandler.GetProfile)
