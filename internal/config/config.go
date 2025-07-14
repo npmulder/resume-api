@@ -11,11 +11,12 @@ import (
 
 // Config represents the complete application configuration
 type Config struct {
-	Environment string         `mapstructure:"environment" validate:"required,oneof=development production test"`
-	Server      ServerConfig   `mapstructure:"server"`
-	Database    DatabaseConfig `mapstructure:"database"`
-	Logging     LoggingConfig  `mapstructure:"logging"`
-	Redis       RedisConfig    `mapstructure:"redis"`
+	Environment string          `mapstructure:"environment" validate:"required,oneof=development production test"`
+	Server      ServerConfig    `mapstructure:"server"`
+	Database    DatabaseConfig  `mapstructure:"database"`
+	Logging     LoggingConfig   `mapstructure:"logging"`
+	Redis       RedisConfig     `mapstructure:"redis"`
+	Telemetry   TelemetryConfig `mapstructure:"telemetry"`
 }
 
 // ServerConfig contains HTTP server configuration
@@ -57,6 +58,15 @@ type RedisConfig struct {
 	DB       int           `mapstructure:"db" validate:"min=0"`
 	TTL      time.Duration `mapstructure:"ttl"`
 	Enabled  bool          `mapstructure:"enabled"`
+}
+
+// TelemetryConfig contains OpenTelemetry configuration
+type TelemetryConfig struct {
+	Enabled          bool    `mapstructure:"enabled"`
+	ServiceName      string  `mapstructure:"service_name" validate:"required_if=Enabled true"`
+	ExporterType     string  `mapstructure:"exporter_type" validate:"required_if=Enabled true,oneof=stdout otlp"`
+	ExporterEndpoint string  `mapstructure:"exporter_endpoint"`
+	SamplingRate     float64 `mapstructure:"sampling_rate" validate:"min=0,max=1"`
 }
 
 // Load loads configuration from environment variables and config files
@@ -136,6 +146,13 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("redis.db", 0)
 	v.SetDefault("redis.ttl", "15m")
 	v.SetDefault("redis.enabled", true)
+
+	// Telemetry defaults
+	v.SetDefault("telemetry.enabled", false)
+	v.SetDefault("telemetry.service_name", "resume-api")
+	v.SetDefault("telemetry.exporter_type", "stdout")
+	v.SetDefault("telemetry.exporter_endpoint", "")
+	v.SetDefault("telemetry.sampling_rate", 1.0) // 100% sampling by default
 }
 
 // validateConfig performs basic validation on the configuration
@@ -212,6 +229,30 @@ func validateConfig(config *Config) error {
 		}
 		if config.Redis.TTL < time.Second {
 			return fmt.Errorf("redis ttl must be at least 1 second")
+		}
+	}
+
+	// Validate Telemetry configuration if enabled
+	if config.Telemetry.Enabled {
+		if config.Telemetry.ServiceName == "" {
+			return fmt.Errorf("telemetry service_name is required when telemetry is enabled")
+		}
+
+		validExporterTypes := map[string]bool{
+			"stdout": true,
+			"otlp":   true,
+		}
+		if !validExporterTypes[config.Telemetry.ExporterType] {
+			return fmt.Errorf("invalid telemetry exporter_type: %s (must be one of: stdout, otlp)", config.Telemetry.ExporterType)
+		}
+
+		// For exporters other than stdout, endpoint is required
+		if config.Telemetry.ExporterType != "stdout" && config.Telemetry.ExporterEndpoint == "" {
+			return fmt.Errorf("telemetry exporter_endpoint is required for exporter type: %s", config.Telemetry.ExporterType)
+		}
+
+		if config.Telemetry.SamplingRate < 0 || config.Telemetry.SamplingRate > 1 {
+			return fmt.Errorf("telemetry sampling_rate must be between 0 and 1, got: %f", config.Telemetry.SamplingRate)
 		}
 	}
 

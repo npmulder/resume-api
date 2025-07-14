@@ -18,10 +18,15 @@ services:
       RESUME_API_DATABASE_PASSWORD: devpass
       RESUME_API_DATABASE_SSL_MODE: disable
       RESUME_API_LOGGING_LEVEL: debug
+      RESUME_API_REDIS_HOST: redis
+      RESUME_API_REDIS_PORT: 6379
+      RESUME_API_REDIS_ENABLED: "true"
     ports:
       - "8080:8080"
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - resume-network
@@ -42,6 +47,24 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dev -d resume_api_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - resume-network
+    restart: unless-stopped
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: resume-api-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -74,3 +97,4 @@ networks:
 
 volumes:
   postgres_data:
+  redis_data:

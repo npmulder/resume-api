@@ -39,6 +39,7 @@ import (
 	"github.com/npmulder/resume-api/internal/repository"
 	"github.com/npmulder/resume-api/internal/repository/postgres"
 	"github.com/npmulder/resume-api/internal/services"
+	"github.com/npmulder/resume-api/internal/tracing"
 	"github.com/npmulder/resume-api/internal/versioning"
 )
 
@@ -58,6 +59,14 @@ func main() {
 	}
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
 	slog.SetDefault(logger)
+
+	// Initialize tracing
+	tracer, err := tracing.NewTracer(context.Background(), &cfg.Telemetry, logger)
+	if err != nil {
+		logger.Error("failed to initialize tracer", "error", err)
+		os.Exit(1)
+	}
+	defer tracer.Shutdown(context.Background())
 
 	// Establish database connection
 	db, err := database.New(context.Background(), &cfg.Database, logger)
@@ -119,6 +128,7 @@ func main() {
 	router.Use(middleware.SecurityHeadersMiddleware())
 	router.Use(middleware.InputValidationMiddleware())
 	router.Use(middleware.RateLimiterMiddleware(middleware.DefaultRateLimiterConfig()))
+	router.Use(middleware.TracingMiddleware(tracer))
 
 	// Add version negotiation middleware
 	router.Use(versioning.VersionNegotiationMiddleware(versioning.DefaultVersionNegotiationOptions()))
@@ -142,17 +152,6 @@ func main() {
 		v1.GET("/achievements", resumeHandler.GetAchievements)
 		v1.GET("/education", resumeHandler.GetEducation)
 		v1.GET("/projects", resumeHandler.GetProjects)
-	}
-
-	// For backward compatibility, keep the old route group
-	apiV1 := router.Group("/api/v1")
-	{
-		apiV1.GET("/profile", resumeHandler.GetProfile)
-		apiV1.GET("/experiences", resumeHandler.GetExperiences)
-		apiV1.GET("/skills", resumeHandler.GetSkills)
-		apiV1.GET("/achievements", resumeHandler.GetAchievements)
-		apiV1.GET("/education", resumeHandler.GetEducation)
-		apiV1.GET("/projects", resumeHandler.GetProjects)
 	}
 
 	// Create and start HTTP server

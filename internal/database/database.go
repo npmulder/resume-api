@@ -15,7 +15,7 @@ import (
 
 // DB wraps a pgx connection pool with additional functionality
 type DB struct {
-	pool   *pgxpool.Pool
+	pool   *TracedPool
 	config *config.DatabaseConfig
 	logger *slog.Logger
 }
@@ -63,8 +63,11 @@ func New(ctx context.Context, cfg *config.DatabaseConfig, logger *slog.Logger) (
 		return nil, fmt.Errorf("failed to create connection pool: %w", err)
 	}
 
+	// Wrap the pool with tracing
+	tracedPool := NewTracedPool(pool)
+
 	db := &DB{
-		pool:   pool,
+		pool:   tracedPool,
 		config: cfg,
 		logger: logger,
 	}
@@ -81,7 +84,7 @@ func New(ctx context.Context, cfg *config.DatabaseConfig, logger *slog.Logger) (
 
 // Pool returns the underlying pgx connection pool
 func (db *DB) Pool() *pgxpool.Pool {
-	return db.pool
+	return db.pool.Pool()
 }
 
 // Ping tests the database connection
@@ -233,7 +236,7 @@ func (t *queryTracer) TraceQueryEnd(ctx context.Context, conn *pgx.Conn, data pg
 		return // No start time available
 	}
 	duration := time.Since(startTime)
-	
+
 	if data.Err != nil {
 		t.logger.Error("Database query failed",
 			slog.Duration("duration", duration),
