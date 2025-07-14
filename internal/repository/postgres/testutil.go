@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -28,7 +29,7 @@ func setupTestDB(t *testing.T) *TestDB {
 
 	cfg := &config.DatabaseConfig{
 		Host:               getTestEnv("TEST_DB_HOST", "localhost"),
-		Port:               5432,
+		Port:               getTestPortFromEnv("TEST_DB_PORT", 5432),
 		Name:               getTestEnv("TEST_DB_NAME", "resume_api_test"),
 		User:               getTestEnv("TEST_DB_USER", "dev"),
 		Password:           getTestEnv("TEST_DB_PASSWORD", "devpass"),
@@ -89,6 +90,16 @@ func (tdb *TestDB) CleanupTables(t *testing.T) {
 func getTestEnv(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
+	}
+	return fallback
+}
+
+// getTestPortFromEnv gets port from environment variable with fallback
+func getTestPortFromEnv(key string, fallback int) int {
+	if value := os.Getenv(key); value != "" {
+		if port, err := strconv.Atoi(value); err == nil {
+			return port
+		}
 	}
 	return fallback
 }

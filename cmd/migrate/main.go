@@ -22,7 +22,9 @@ func main() {
 	if len(flag.Args()) > 0 {
 		*direction = flag.Args()[0]
 		if len(flag.Args()) > 1 {
-			fmt.Sscanf(flag.Args()[1], "%d", steps)
+			if _, err := fmt.Sscanf(flag.Args()[1], "%d", steps); err != nil {
+				log.Printf("Warning: failed to parse steps argument: %v", err)
+			}
 		}
 	}
 

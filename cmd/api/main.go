@@ -66,7 +66,11 @@ func main() {
 		logger.Error("failed to initialize tracer", "error", err)
 		os.Exit(1)
 	}
-	defer tracer.Shutdown(context.Background())
+	defer func() {
+		if err := tracer.Shutdown(context.Background()); err != nil {
+			logger.Error("failed to shutdown tracer", "error", err)
+		}
+	}()
 
 	// Establish database connection
 	db, err := database.New(context.Background(), &cfg.Database, logger)

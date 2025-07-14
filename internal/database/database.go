@@ -13,6 +13,11 @@ import (
 	"github.com/npmulder/resume-api/internal/config"
 )
 
+// Define custom context key type to avoid collisions
+type contextKey string
+
+const queryStartKey contextKey = "query_start"
+
 // DB wraps a pgx connection pool with additional functionality
 type DB struct {
 	pool   *TracedPool
@@ -226,12 +231,12 @@ type queryTracer struct {
 
 func (t *queryTracer) TraceQueryStart(ctx context.Context, conn *pgx.Conn, data pgx.TraceQueryStartData) context.Context {
 	// Store start time in context for duration calculation
-	return context.WithValue(ctx, "query_start", time.Now())
+	return context.WithValue(ctx, queryStartKey, time.Now())
 }
 
 func (t *queryTracer) TraceQueryEnd(ctx context.Context, conn *pgx.Conn, data pgx.TraceQueryEndData) {
 	// Only log slow queries or errors in production
-	startTime, ok := ctx.Value("query_start").(time.Time)
+	startTime, ok := ctx.Value(queryStartKey).(time.Time)
 	if !ok {
 		return // No start time available
 	}

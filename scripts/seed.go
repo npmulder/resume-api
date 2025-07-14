@@ -128,7 +128,11 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to begin transaction:", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			log.Printf("Warning: failed to rollback transaction: %v", err)
+		}
+	}()
 
 	// Seed all data
 	if err := seedProfile(tx, seedData.Profile); err != nil {

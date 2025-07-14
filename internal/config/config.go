@@ -156,11 +156,11 @@ func loadEnvFromFile(filePath string) {
 // bindEnvVariables explicitly binds environment variables to viper keys
 func bindEnvVariables(v *viper.Viper) {
 	// Bind telemetry environment variables
-	v.BindEnv("telemetry.enabled", "RESUME_API_TELEMETRY_ENABLED")
-	v.BindEnv("telemetry.service_name", "RESUME_API_TELEMETRY_SERVICE_NAME")
-	v.BindEnv("telemetry.exporter_type", "RESUME_API_TELEMETRY_EXPORTER_TYPE")
-	v.BindEnv("telemetry.exporter_endpoint", "RESUME_API_TELEMETRY_EXPORTER_ENDPOINT")
-	v.BindEnv("telemetry.sampling_rate", "RESUME_API_TELEMETRY_SAMPLING_RATE")
+	_ = v.BindEnv("telemetry.enabled", "RESUME_API_TELEMETRY_ENABLED")
+	_ = v.BindEnv("telemetry.service_name", "RESUME_API_TELEMETRY_SERVICE_NAME")
+	_ = v.BindEnv("telemetry.exporter_type", "RESUME_API_TELEMETRY_EXPORTER_TYPE")
+	_ = v.BindEnv("telemetry.exporter_endpoint", "RESUME_API_TELEMETRY_EXPORTER_ENDPOINT")
+	_ = v.BindEnv("telemetry.sampling_rate", "RESUME_API_TELEMETRY_SAMPLING_RATE")
 }
 
 // setDefaults sets default configuration values

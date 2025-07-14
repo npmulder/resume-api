@@ -32,13 +32,14 @@ func ErrorResponse(c *gin.Context, status int, message string, opts ...models.AP
 
 // HandleError handles common error types and returns an appropriate response
 func HandleError(c *gin.Context, err error) {
+	var repoErr *repository.RepositoryError
 	switch {
 	case errors.Is(err, repository.ErrNotFound):
 		// Handle not found errors
 		ErrorResponse(c, http.StatusNotFound, "The requested resource was not found", 
 			models.WithCode(models.ErrCodeNotFound))
 
-	case errors.As(err, &repository.RepositoryError{}):
+	case errors.As(err, &repoErr):
 		// Handle repository errors
 		ErrorResponse(c, http.StatusInternalServerError, "An error occurred while accessing the data",
 			models.WithDetails(err.Error()))

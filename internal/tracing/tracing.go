@@ -15,6 +15,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 
 	"github.com/npmulder/resume-api/internal/config"
 )
@@ -30,7 +31,7 @@ func NewTracer(ctx context.Context, cfg *config.TelemetryConfig, logger *slog.Lo
 	if !cfg.Enabled {
 		logger.Info("tracing is disabled")
 		return &Tracer{
-			tracer: trace.NewNoopTracerProvider().Tracer("noop"),
+			tracer: noop.NewTracerProvider().Tracer("noop"),
 		}, nil
 	}
 
@@ -110,7 +111,7 @@ func (t *Tracer) Tracer() trace.Tracer {
 // TracerProvider returns the OpenTelemetry tracer provider
 func (t *Tracer) TracerProvider() trace.TracerProvider {
 	if t.tp == nil {
-		return trace.NewNoopTracerProvider()
+		return noop.NewTracerProvider()
 	}
 	return t.tp
 }
