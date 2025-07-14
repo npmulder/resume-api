@@ -107,6 +107,14 @@ func (t *Tracer) Tracer() trace.Tracer {
 	return t.tracer
 }
 
+// TracerProvider returns the OpenTelemetry tracer provider
+func (t *Tracer) TracerProvider() trace.TracerProvider {
+	if t.tp == nil {
+		return trace.NewNoopTracerProvider()
+	}
+	return t.tp
+}
+
 // Shutdown shuts down the tracer provider
 func (t *Tracer) Shutdown(ctx context.Context) error {
 	if t.tp != nil {

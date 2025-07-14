@@ -3,6 +3,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -77,11 +78,6 @@ func Load() (*Config, error) {
 	// Set default values
 	setDefaults(v)
 
-	// Configure Viper to read from environment variables
-	v.AutomaticEnv()
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	v.SetEnvPrefix("RESUME_API")
-
 	// Try to read from .env file (optional)
 	v.SetConfigName(".env")
 	v.SetConfigType("env")
@@ -93,7 +89,20 @@ func Load() (*Config, error) {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return nil, fmt.Errorf("failed to read config file: %w", err)
 		}
+	} else {
+		// Load environment variables from the .env file
+		// This is a workaround for viper not correctly reading environment variables from the .env file
+		loadEnvFromFile(v.ConfigFileUsed())
 	}
+
+	// Configure Viper to read from environment variables
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.SetEnvPrefix("RESUME_API")
+
+	// Explicitly bind environment variables for telemetry
+	// This ensures that environment variables are properly mapped to the configuration struct
+	bindEnvVariables(v)
 
 	// Unmarshal configuration
 	var config Config
@@ -107,6 +116,51 @@ func Load() (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+// loadEnvFromFile loads environment variables from a .env file
+func loadEnvFromFile(filePath string) {
+	// Read the .env file
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return
+	}
+
+	// Parse the .env file line by line
+	lines := strings.Split(string(data), "\n")
+	for _, line := range lines {
+		// Skip comments and empty lines
+		if strings.HasPrefix(strings.TrimSpace(line), "#") || strings.TrimSpace(line) == "" {
+			continue
+		}
+
+		// Split the line into key and value
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+
+		// Remove comments from the value
+		if idx := strings.Index(value, "#"); idx != -1 {
+			value = strings.TrimSpace(value[:idx])
+		}
+
+		// Set the environment variable
+		os.Setenv(key, value)
+	}
+}
+
+// bindEnvVariables explicitly binds environment variables to viper keys
+func bindEnvVariables(v *viper.Viper) {
+	// Bind telemetry environment variables
+	v.BindEnv("telemetry.enabled", "RESUME_API_TELEMETRY_ENABLED")
+	v.BindEnv("telemetry.service_name", "RESUME_API_TELEMETRY_SERVICE_NAME")
+	v.BindEnv("telemetry.exporter_type", "RESUME_API_TELEMETRY_EXPORTER_TYPE")
+	v.BindEnv("telemetry.exporter_endpoint", "RESUME_API_TELEMETRY_EXPORTER_ENDPOINT")
+	v.BindEnv("telemetry.sampling_rate", "RESUME_API_TELEMETRY_SAMPLING_RATE")
 }
 
 // setDefaults sets default configuration values
