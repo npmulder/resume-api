@@ -165,10 +165,6 @@ func intPtr(i int) *int {
 	return &i
 }
 
-func boolPtr(b bool) *bool {
-	return &b
-}
-
 func timePtr(t time.Time) *time.Time {
 	return &t
 }
@@ -316,31 +312,31 @@ func TestSkillsEndToEnd(t *testing.T) {
 	ctx := context.Background()
 	skills := []*models.Skill{
 		{
-			Name:        "Go",
-			Category:    "Languages",
-			Level:       stringPtr("Expert"),
-			YearsExperience:  intPtr(5),
-			IsFeatured:  true,
-			OrderIndex:  0,
-			Description: stringPtr("Primary programming language"),
+			Name:            "Go",
+			Category:        "Languages",
+			Level:           stringPtr("Expert"),
+			YearsExperience: intPtr(5),
+			IsFeatured:      true,
+			OrderIndex:      0,
+			Description:     stringPtr("Primary programming language"),
 		},
 		{
-			Name:        "PostgreSQL",
-			Category:    "Databases",
-			Level:       stringPtr("Advanced"),
-			YearsExperience:  intPtr(4),
-			IsFeatured:  true,
-			OrderIndex:  1,
-			Description: stringPtr("Primary database"),
+			Name:            "PostgreSQL",
+			Category:        "Databases",
+			Level:           stringPtr("Advanced"),
+			YearsExperience: intPtr(4),
+			IsFeatured:      true,
+			OrderIndex:      1,
+			Description:     stringPtr("Primary database"),
 		},
 		{
-			Name:        "Docker",
-			Category:    "DevOps",
-			Level:       stringPtr("Intermediate"),
-			YearsExperience:  intPtr(3),
-			IsFeatured:  false,
-			OrderIndex:  2,
-			Description: stringPtr("Containerization"),
+			Name:            "Docker",
+			Category:        "DevOps",
+			Level:           stringPtr("Intermediate"),
+			YearsExperience: intPtr(3),
+			IsFeatured:      false,
+			OrderIndex:      2,
+			Description:     stringPtr("Containerization"),
 		},
 	}
 
@@ -579,33 +575,33 @@ func TestProjectsEndToEnd(t *testing.T) {
 	ctx := context.Background()
 	projects := []*models.Project{
 		{
-			Name:        "Resume API",
-			Description: stringPtr("RESTful API for resume data"),
-			GitHubURL:   stringPtr("https://github.com/example/resume-api"),
-			Status:      "active",
-			IsFeatured:  true,
-			OrderIndex:  0,
+			Name:         "Resume API",
+			Description:  stringPtr("RESTful API for resume data"),
+			GitHubURL:    stringPtr("https://github.com/example/resume-api"),
+			Status:       "active",
+			IsFeatured:   true,
+			OrderIndex:   0,
 			Technologies: []string{"Go", "PostgreSQL", "Docker", "Kubernetes"},
-			KeyFeatures: []string{"RESTful API", "Clean Architecture", "Integration Tests"},
+			KeyFeatures:  []string{"RESTful API", "Clean Architecture", "Integration Tests"},
 		},
 		{
-			Name:        "Personal Website",
-			Description: stringPtr("Portfolio website"),
-			DemoURL:     stringPtr("https://example.com"),
-			Status:      "completed",
-			IsFeatured:  true,
-			OrderIndex:  1,
+			Name:         "Personal Website",
+			Description:  stringPtr("Portfolio website"),
+			DemoURL:      stringPtr("https://example.com"),
+			Status:       "completed",
+			IsFeatured:   true,
+			OrderIndex:   1,
 			Technologies: []string{"JavaScript", "HTML", "CSS", "React"},
-			KeyFeatures: []string{"Responsive Design", "Portfolio", "Contact Form"},
+			KeyFeatures:  []string{"Responsive Design", "Portfolio", "Contact Form"},
 		},
 		{
-			Name:        "Side Project",
-			Description: stringPtr("Experimental project"),
-			Status:      "planning",
-			IsFeatured:  false,
-			OrderIndex:  2,
+			Name:         "Side Project",
+			Description:  stringPtr("Experimental project"),
+			Status:       "planning",
+			IsFeatured:   false,
+			OrderIndex:   2,
 			Technologies: []string{"Rust"},
-			KeyFeatures: []string{"Experimental", "Learning Project"},
+			KeyFeatures:  []string{"Experimental", "Learning Project"},
 		},
 	}
 
