@@ -85,7 +85,7 @@ database:
     enabled: false
     image:
       repository: postgres
-      tag: 15-alpine
+      tag: 17-alpine
       pullPolicy: IfNotPresent
     persistence:
       enabled: true

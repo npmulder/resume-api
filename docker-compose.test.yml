@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Test PostgreSQL database
   test-db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: resume-api-test-db
     environment:
       POSTGRES_DB: resume_api_test

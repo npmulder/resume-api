@@ -40,7 +40,7 @@ services:
 
   # PostgreSQL database
   db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: resume-api-db
     environment:
       POSTGRES_DB: resume_api_dev
