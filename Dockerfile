@@ -20,7 +20,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o resume-api ./cmd/api
 
 # Final stage
-FROM alpine:3.18
+FROM alpine:3.22
 
 # Add non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
