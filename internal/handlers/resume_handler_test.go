@@ -124,7 +124,7 @@ func TestGetProfile(t *testing.T) {
 
 		// Assert response
 		assert.Equal(t, http.StatusNotFound, w.Code)
-		assert.Contains(t, w.Body.String(), "Not found")
+		assert.Contains(t, w.Body.String(), "Profile not found")
 
 		// Verify mock expectations
 		mockService.AssertExpectations(t)
@@ -151,7 +151,7 @@ func TestGetProfile(t *testing.T) {
 
 		// Assert response
 		assert.Equal(t, http.StatusInternalServerError, w.Code)
-		assert.Contains(t, w.Body.String(), "Internal server error")
+		assert.Contains(t, w.Body.String(), "An unexpected error occurred")
 
 		// Verify mock expectations
 		mockService.AssertExpectations(t)
@@ -225,7 +225,7 @@ func TestGetExperiences(t *testing.T) {
 
 		// Assert response
 		assert.Equal(t, http.StatusNotFound, w.Code)
-		assert.Contains(t, w.Body.String(), "Not found")
+		assert.Contains(t, w.Body.String(), "No experiences found matching the criteria")
 
 		// Verify mock expectations
 		mockService.AssertExpectations(t)

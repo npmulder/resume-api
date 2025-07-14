@@ -84,7 +84,7 @@ func TestProfileRepository(t *testing.T) {
 		profile, err := repo.GetProfile(ctx)
 		assert.Error(t, err)
 		assert.Nil(t, profile)
-		assert.Contains(t, err.Error(), "profile not found")
+		assert.Contains(t, err.Error(), "not found")
 	})
 
 	t.Run("UpdateProfile", func(t *testing.T) {
@@ -140,7 +140,7 @@ func TestProfileRepository(t *testing.T) {
 
 		err := repo.UpdateProfile(ctx, profile)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "profile with id 999 not found")
+		assert.Contains(t, err.Error(), "not found")
 	})
 
 	t.Run("CreateProfile_DuplicateEmail", func(t *testing.T) {

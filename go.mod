@@ -1,6 +1,8 @@
 module github.com/npmulder/resume-api
 
-go 1.24.4
+go 1.23.0
+
+toolchain go1.24.4
 
 require (
 	github.com/gin-contrib/cors v1.7.6
