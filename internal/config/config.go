@@ -18,6 +18,7 @@ type Config struct {
 	Logging     LoggingConfig   `mapstructure:"logging"`
 	Redis       RedisConfig     `mapstructure:"redis"`
 	Telemetry   TelemetryConfig `mapstructure:"telemetry"`
+	CORS        CORSConfig      `mapstructure:"cors"`
 }
 
 // ServerConfig contains HTTP server configuration
@@ -68,6 +69,16 @@ type TelemetryConfig struct {
 	ExporterType     string  `mapstructure:"exporter_type" validate:"required_if=Enabled true,oneof=stdout otlp"`
 	ExporterEndpoint string  `mapstructure:"exporter_endpoint"`
 	SamplingRate     float64 `mapstructure:"sampling_rate" validate:"min=0,max=1"`
+}
+
+// CORSConfig contains CORS configuration
+type CORSConfig struct {
+	AllowOrigins     []string      `mapstructure:"allow_origins"`
+	AllowMethods     []string      `mapstructure:"allow_methods"`
+	AllowHeaders     []string      `mapstructure:"allow_headers"`
+	ExposeHeaders    []string      `mapstructure:"expose_headers"`
+	AllowCredentials bool          `mapstructure:"allow_credentials"`
+	MaxAge           time.Duration `mapstructure:"max_age"`
 }
 
 // Load loads configuration from environment variables and config files
@@ -161,6 +172,14 @@ func bindEnvVariables(v *viper.Viper) {
 	_ = v.BindEnv("telemetry.exporter_type", "RESUME_API_TELEMETRY_EXPORTER_TYPE")
 	_ = v.BindEnv("telemetry.exporter_endpoint", "RESUME_API_TELEMETRY_EXPORTER_ENDPOINT")
 	_ = v.BindEnv("telemetry.sampling_rate", "RESUME_API_TELEMETRY_SAMPLING_RATE")
+
+	// Bind CORS environment variables
+	_ = v.BindEnv("cors.allow_origins", "RESUME_API_CORS_ALLOW_ORIGINS")
+	_ = v.BindEnv("cors.allow_methods", "RESUME_API_CORS_ALLOW_METHODS")
+	_ = v.BindEnv("cors.allow_headers", "RESUME_API_CORS_ALLOW_HEADERS")
+	_ = v.BindEnv("cors.expose_headers", "RESUME_API_CORS_EXPOSE_HEADERS")
+	_ = v.BindEnv("cors.allow_credentials", "RESUME_API_CORS_ALLOW_CREDENTIALS")
+	_ = v.BindEnv("cors.max_age", "RESUME_API_CORS_MAX_AGE")
 }
 
 // setDefaults sets default configuration values
@@ -207,6 +226,14 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("telemetry.exporter_type", "stdout")
 	v.SetDefault("telemetry.exporter_endpoint", "")
 	v.SetDefault("telemetry.sampling_rate", 1.0) // 100% sampling by default
+
+	// CORS defaults
+	v.SetDefault("cors.allow_origins", []string{"http://localhost:3000", "http://127.0.0.1:3000"})
+	v.SetDefault("cors.allow_methods", []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"})
+	v.SetDefault("cors.allow_headers", []string{"Origin", "Content-Type", "Accept", "Authorization"})
+	v.SetDefault("cors.expose_headers", []string{"Content-Length"})
+	v.SetDefault("cors.allow_credentials", true)
+	v.SetDefault("cors.max_age", "12h")
 }
 
 // validateConfig performs basic validation on the configuration

@@ -126,7 +126,7 @@ func main() {
 	router.Use(middleware.RequestIDMiddleware())
 	router.Use(middleware.ErrorHandlerMiddleware(logger))
 	router.Use(middleware.LoggingMiddleware(logger))
-	router.Use(middleware.CORSMiddleware())
+	router.Use(middleware.CORSMiddleware(&cfg.CORS))
 	router.Use(middleware.TimeoutMiddleware(cfg.Server.RequestTimeout, logger))
 	router.Use(middleware.MetricsMiddleware())
 	router.Use(middleware.SecurityHeadersMiddleware())
